@@ -1,0 +1,88 @@
+-- English Pronuns
+-- many thanks to http://pronoun.is
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{she, her}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{he, him}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{it, its}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{they, them}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ze, zir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ze, hir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{xe, xem, xyr}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ae, aer}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{e, em, eir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ey, em, eir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{fae, faer, faers}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{fey, fem, feirs}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{hu, hum}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{jee, jem, jeir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{kit, kits}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ne, nem, nir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{peh, pehm, peh''s}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{per, per, per''s}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{sie, hir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{se, sim, sir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{shi, hir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{si, hyr}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{thon, thon, thons}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ve, vem}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ve, ver}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{vi, ver}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{vi, vim, vir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{vi, vim, vim}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{xie, xer}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{xe, xem, xyr}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{xey, xem, xeir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{yo, yos}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ze, zem, zes, zirself}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ze, mer, zer, zers, zemself}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{ze, zed, zeta, zetas, zedself}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{zie, zem, zies, zirself}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{zie, hir}';
+DELETE FROM pronouns WHERE language = 'eng' AND cases = '{zme, zmyr}';
+
+-- German pronouns
+-- many thanks to nib.space
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{sie, ihr}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{er, ihm}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{es, ihm}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{A, As}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{as, ihm}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{as, sain, iem}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{dey, deren, denen}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{el, em, en}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{si*er}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{sier}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{si:er}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{si''er}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{si_er}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{er*sie}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{ersie}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{er:sie}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{er''sie}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{er_sie}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{ey, eys, em}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{hän, sir, sin, sim}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{hen}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{hen, hyn, ham, han}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{iks, ikses}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{ind, inds, inde, ind}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{k}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{le, lein, lir, lich}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{nin, nims, nim, nin}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{per, pers}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{ser, ses, sem, sen}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{sir}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{sir, sihr, ihrm, sin}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{they, them}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{vii, viis, viiv, vii}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{why}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{x}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{xier, xies, xiem, xien}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{xier, xierem}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{zet, zern, zerm, zern}';
+DELETE FROM pronouns WHERE language = 'deu' AND cases = '{zet, zets, zerm, zern}';
+
+-- Dutch pronouns
+DELETE FROM pronouns WHERE language = 'nld' AND cases = '{zij, haar}';
+DELETE FROM pronouns WHERE language = 'nld' AND cases = '{hij, hem}';
+DELETE FROM pronouns WHERE language = 'nld' AND cases = '{hen, hun}';
+DELETE FROM pronouns WHERE language = 'nld' AND cases = '{vij, her, zaar}';
