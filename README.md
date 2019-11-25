@@ -1,5 +1,20 @@
 # PronounBot
 
+Since Discord doesn't have an easy way for users to show their
+pronouns, many servers use pronoun roles so that their users aren't
+misgendered. Unfortunately creating roles for any pronoun a user might
+have can be time-consuming, and only creating them when needed means
+the users have to ask the server moderators for pronouns. PronounBot
+aims to automate this while still preventing users from giving
+themselves anything as a role.
+
+## Features
+
+- Add and remove approved pronouns
+- Create pronoun roles as needed
+- Add pronouns in different languages
+
+
 ## Usage
 
 ### User Options
