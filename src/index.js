@@ -6,6 +6,7 @@ const discordClient = new Client();
 
 const defaultPrefix = '^';
 const defaultLanguage = 'eng';
+const commandWord = process.env.COMMANDWORD || 'pronouns';
 
 const showError = async (errorMessage, channel) => {
   channel.send(`:space_invader: ${errorMessage}`);
@@ -168,9 +169,9 @@ const examples = [
 const getExample = (serverSettings) => {
   const { pronoun, language, iso } = examples[Math.floor(Math.random() * examples.length)];
   if (iso == serverSettings.language) {
-    return `\`${serverSettings.prefix}pronouns add ${pronoun}\``;
+    return `\`${serverSettings.prefix}${commandWord} add ${pronoun}\``;
   }
-  return `\`${serverSettings.prefix}pronouns add ${pronoun} language:${language}\``;
+  return `\`${serverSettings.prefix}${commandWord} add ${pronoun} language:${language}\``;
 };
 
 discordClient.on('message', async (message) => {
@@ -189,16 +190,16 @@ discordClient.on('message', async (message) => {
     let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g); // split by space keeping quote-wrapped strings
     if (parse) {
       parse = parse.map((x) => x.replace(/"/g, ''));
-      if (parse[0] == `${serverSettings.prefix}pronouns`) {
+      if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
         if (parse[1] == 'add') {
           if (parse.length < 3) {
-            await showError(`Use as \`${serverSettings.prefix}pronouns add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
+            await showError(`Use as \`${serverSettings.prefix}${commandWord} add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
           } else {
             await addPronouns(parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'delete') {
           if (parse.length < 3) {
-            await showError(`Use as \`${serverSettings.prefix}pronouns delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
+            await showError(`Use as \`${serverSettings.prefix}${commandWord} delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
           } else {
             await deletePronouns(parse.slice(2), message, serverSettings);
           }
@@ -207,16 +208,16 @@ discordClient.on('message', async (message) => {
             '***Help for PronounBot***\n' +
             '\n' +
             '**Add:** Add a pronoun role to your roles\n' +
-            `Use as \`${serverSettings.prefix}pronouns add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
+            `Use as \`${serverSettings.prefix}${commandWord} add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
             '**Delete:** Delete a pronoun role from your roles\n' +
-            `Use as \`${serverSettings.prefix}pronouns delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
+            `Use as \`${serverSettings.prefix}${commandWord} delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
             '**Help:** Show this help screen';
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
             helpText += `\n\n***Config Option:***\n\n` +
                         `**Prefix:** set a server prefix\n` +
-                        `Use as \`${serverSettings.prefix}pronouns prefix <prefix>\`, for example \`${serverSettings.prefix}pronouns prefix !\`\n\n` +
+                        `Use as \`${serverSettings.prefix}${commandWord} config prefix <prefix>\`, for example \`${serverSettings.prefix}${commandWord} prefix !\`\n\n` +
                         `**Language:** set the server's primary language\n` +
-                        `Use as \`${serverSettings.prefix}pronouns language <language>\`, for example \`${serverSettings.prefix}pronouns language German \`\n\n`;
+                        `Use as \`${serverSettings.prefix}${commandWord} config language <language>\`, for example \`${serverSettings.prefix}${commandWord} language German \`\n\n`;
           }
           const embed = new RichEmbed().setAuthor('PronounBot').setDescription(helpText);
           await message.channel.send(embed);
