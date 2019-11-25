@@ -1,5 +1,6 @@
 const { Client, RichEmbed, Permissions } = require('discord.js');
 const { Database } = require('./db.js');
+const { getHelpText, getUsage } = require('./help.js');
 
 const database = new Database();
 const discordClient = new Client();
@@ -159,21 +160,6 @@ const deletePronouns = async (args, { author, member, channel }, serverSettings)
   }
 };
 
-const examples = [
-  { pronoun: 'she/her', language: 'English', iso: 'eng' },
-  { pronoun: 'nin/nim', language: 'Deutsch', iso: 'deu' },
-  { pronoun: 'vij', language: 'nld', iso: 'nld' },
-  { pronoun: 'elle', language: 'Spanish', iso: 'spa' },
-];
-
-const getExample = (serverSettings) => {
-  const { pronoun, language, iso } = examples[Math.floor(Math.random() * examples.length)];
-  if (iso == serverSettings.language) {
-    return `\`${serverSettings.prefix}${commandWord} add ${pronoun}\``;
-  }
-  return `\`${serverSettings.prefix}${commandWord} add ${pronoun} language:${language}\``;
-};
-
 discordClient.on('message', async (message) => {
   const guildId = parseInt(message.guild.id).toString(16);
   try {
@@ -193,39 +179,28 @@ discordClient.on('message', async (message) => {
       if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
         if (parse[1] == 'add') {
           if (parse.length < 3) {
-            await showError(`Use as \`${serverSettings.prefix}${commandWord} add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
+            await showError(getUsage('add', commandWord, serverSettings), message.channel);
           } else {
             await addPronouns(parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'delete') {
           if (parse.length < 3) {
-            await showError(`Use as \`${serverSettings.prefix}${commandWord} delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}`, message.channel);
+            await showError(getUsage('delete', commandWord, serverSettings), message.channel);
           } else {
             await deletePronouns(parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'help') {
-          let helpText =
-            '***Help for PronounBot***\n' +
-            '\n' +
-            '**Add:** Add a pronoun role to your roles\n' +
-            `Use as \`${serverSettings.prefix}${commandWord} add <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
-            '**Delete:** Delete a pronoun role from your roles\n' +
-            `Use as \`${serverSettings.prefix}${commandWord} delete <pronoun> [language:<language>]\`, for example ${getExample(serverSettings)}\n\n` +
-            '**Help:** Show this help screen';
-          if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
-            helpText += `\n\n***Config Option:***\n\n` +
-                        `**Prefix:** set a server prefix\n` +
-                        `Use as \`${serverSettings.prefix}${commandWord} config prefix <prefix>\`, for example \`${serverSettings.prefix}${commandWord} prefix !\`\n\n` +
-                        `**Language:** set the server's primary language\n` +
-                        `Use as \`${serverSettings.prefix}${commandWord} config language <language>\`, for example \`${serverSettings.prefix}${commandWord} language German \`\n\n`;
-          }
-          const embed = new RichEmbed().setAuthor('PronounBot').setDescription(helpText);
+          let embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
         } else if (parse[1] == 'config') {
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
             if (parse[2] == 'prefix') {
-              await database.updatePrefix(guildId, parse[3]);
-              message.channel.send(`changed prefix to ${parse[3]}`);
+              if (parse.length < 4) {
+                showError(getUsage('prefix', commandWord, serverSettings), message.channel);
+              } else {
+                await database.updatePrefix(guildId, parse[3]);
+                message.channel.send(`changed prefix to ${parse[3]}`);
+              }
             } else if (parse[2] == 'language') {
               const languages = await database.getLanguage(parse[3]);
               if (languages.length == 0) {
