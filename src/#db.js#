@@ -37,7 +37,7 @@ class Database {
 
   async getLanguage(name) {
     const queryString = this.queries['language.get'];
-    const result = await this.db.query(queryString, [name]);
+    let result = await this.db.query(queryString, [name]);
     return result.rows;
   }
 
@@ -57,6 +57,7 @@ class Database {
 
     return rows;
   }
+&bontje delete language:de x
 
   registerRole(role) {
     const queryString = this.queries['role-protect.add'];
@@ -70,7 +71,7 @@ class Database {
 
   async isRegistered(role) {
     const queryString = this.queries['role-protect.get'];
-    const result = await this.db.query(queryString, [normaliseId(role.guild), role.name]);
+    let result = await this.db.query(queryString, [normaliseId(role.guild), role.name]);
     return result.rows.length != 0;
   }
 }

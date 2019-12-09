@@ -51,7 +51,7 @@ const chooser = async ({ author, channel }, question, choices, choiceFormatter) 
   );
   const index = parseInt(response.first().content) - 1;
   return choices[index];
-};
+}
 
 const pronounRoleName = (pronoun, serverSettings) => {
   const display = pronoun.cases.join('/');
@@ -70,7 +70,7 @@ const addPronounRole = async (pronoun, { member, channel, guild }, serverSetting
   if (role) {
     await member.addRole(role);
   } else {
-    const newRole = await guild.createRole({ name: qualified });
+    let newRole = await guild.createRole({name: qualified});
     await Promise.all([member.addRole(newRole), database.registerRole(newRole)]);
   }
 };
@@ -107,19 +107,19 @@ const addPronoun = async (args, { author, member, channel, guild }, serverSettin
 
 const countRole =
   (role) => role.guild.members
-    .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
-    .size;
+                .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
+                .size;
 
-const deletePronounRole = async (pronoun, { channel, member }, serverSettings) => {
+const deletePronounRole = async (pronoun, { channel, guild, member }, serverSettings) => {
   const [display, qualified] = pronounRoleName(pronoun, serverSettings);
   const role = member.roles.find((el) => el.name == qualified);
   if (role != undefined) {
     channel.send(`removing role ${display}`);
-    const numberUsers = countRole(role);
-    const [isRegistered] = await Promise.all([await database.isRegistered(role), member.removeRole(role)]);
-    if (isRegistered && numberUsers == 1) {
-      await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
-      channel.send('deleting role');
+    let numberUsers = countRole(role);
+    let [isRegistered, newMember] = await Promise.all([await database.isRegistered(role), member.removeRole(role)]);
+    if (isRegistered &&  numberUsers == 1) {
+      await Promise.all([database.unregisterRole(role), guild.])
+      channel.send("deleting role");
     }
   } else {
     throw {
@@ -129,7 +129,7 @@ const deletePronounRole = async (pronoun, { channel, member }, serverSettings) =
   }
 };
 
-const deletePronoun = async (args, { author, member, channel }, serverSettings) => {
+const deletePronoun = async (args, { author, member, guild, channel }, serverSettings) => {
   try {
     const [argsParsed, language] = filterOptions(args, serverSettings.primaryLanguage);
 
@@ -145,7 +145,7 @@ const deletePronoun = async (args, { author, member, channel }, serverSettings) 
       await deletePronounRole(pronouns[0], { channel, member }, serverSettings);
     } else {
       pronouns = pronouns.filter((pronoun) => {
-        const qualified = pronounRoleName(pronoun, serverSettings)[1];
+        const [_, qualified] = pronounRoleName(pronoun, serverSettings);
         return member.roles.find((el) => el.name == qualified);
       });
       if (pronouns.length == 0) {
@@ -154,7 +154,7 @@ const deletePronoun = async (args, { author, member, channel }, serverSettings) 
           userfacing: true,
         };
       } else if (pronouns.length == 1) {
-        await deletePronounRole(pronouns[0], { channel, member }, serverSettings);
+        await deletePronounRole(pronouns[0], { channel, member, guild }, serverSettings);
       } else {
         const pronounFormatter = (pronoun) => `${pronoun.cases.join('/')} *(${ pronoun.language })*`;
         const message = 'Unfortunately that\'s not enough to know what pronoun you want removed\nHere\'s the options we have for you:';
@@ -172,20 +172,20 @@ const deletePronoun = async (args, { author, member, channel }, serverSettings) 
   }
 };
 
-const pronounWorker = async ({ action, args, message, serverSettings }) => {
-  if (action == 'add') {
+const pronounWorker = async ({action, args, message, serverSettings}) => {
+  if (action == "add") {
     await addPronoun(args, message, serverSettings);
-  } else if (action == 'delete') {
+  } else if (action == "delete") {
     await deletePronoun(args, message, serverSettings);
   }
-};
+}
 
 const pronounAction = (action, args, message, serverSettings) => {
   if (!serverQueues[message.guild.id]) {
     serverQueues[message.guild.id] = queue(pronounWorker);
   }
-  serverQueues[message.guild.id].push({ action, args, message, serverSettings });
-};
+  serverQueues[message.guild.id].push({action, args, message, serverSettings});
+}
 
 discordClient.on('message', async (message) => {
   const guildId = parseInt(message.guild.id).toString(16);
@@ -199,8 +199,8 @@ discordClient.on('message', async (message) => {
         abuseProtect: true,
       };
     }
-    // split by space keeping quote-wrapped strings
-    let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g);
+
+    let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g); // split by space keeping quote-wrapped strings
     if (parse) {
       parse = parse.map((x) => x.replace(/"/g, ''));
       if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
@@ -217,7 +217,7 @@ discordClient.on('message', async (message) => {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'help') {
-          const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
+          let embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
         } else if (parse[1] == 'config') {
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
@@ -236,8 +236,8 @@ discordClient.on('message', async (message) => {
                 message.channel.send(`Setting your language to ${languages[0].name} [${languages[0].iso_639_3}]`);
                 await database.updatePrimaryLanguage(languages[0].iso_639_3);
               } else {
-                const question = 'We have several languages that match that name.\nWhich one do you want?';
-                const choice = await chooser(message, question, languages, (language) => `${language.name} [${language.iso_639_3}]`);
+                const question = "We have several languages that match that name.\nWhich one do you want?";
+                let choice = await chooser(message, question, languages, (language) => `${language.name} [${language.iso_639_3}]`);
                 await database.updatePrimaryLanguage(choice.iso_639_3);
               }
             }

@@ -16,21 +16,20 @@ const getExample = (command, commandWord, serverSettings) => {
 };
 
 const getUsage = (command, commandWord, serverSettings) => {
-  let commandPrefix = `${serverSettings.prefix}${commandWord}`;
+  const commandPrefix = `${serverSettings.prefix}${commandWord}`;
   if (command == 'add' || command == 'delete') {
     return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>]\`, ` +
          `for example ${getExample(command, commandWord, serverSettings)}`;
   } else if (command == 'prefix') {
     return `Use as \`${commandPrefix} config prefix <prefix>\`, ` +
-           `for example \`${commandPrefix} config prefix !\``
+           `for example \`${commandPrefix} config prefix !\``;
   } else if (command == 'language') {
     return `Use as \`${commandPrefix} config language <language>\`, ` +
       `for example \`${commandPrefix} config language ${examples[Math.floor(Math.random() * examples.length)].language}\``;
   }
-}
+};
 
 const getHelpText = (commandWord, serverSettings, config) => {
-  let commandPrefix = `${serverSettings.prefix}${commandWord}`;
   let helpText =
     '***Help for PronounBot***\n' +
     '\n' +
@@ -43,21 +42,21 @@ const getHelpText = (commandWord, serverSettings, config) => {
     '**Help:** Show this help screen';
   if (config) {
     helpText +=
-      `\n\n***Config Options:***\n\n` +
-      `**Prefix:** set a server prefix\n` +
+      '\n\n***Config Options:***\n\n' +
+      '**Prefix:** set a server prefix\n' +
       getUsage('prefix', commandWord, serverSettings) +
       '\n\n' +
-      `**Language:** set the server's primary language\n` +
+      '**Language:** set the server\'s primary language\n' +
       getUsage('language', commandWord, serverSettings) +
-      '\n\n'
+      '\n\n';
   }
   helpText +=
     '*If you have any feedback or bug reports please tell me on my [discord server](https://discord.gg/UcjkRJq) ' +
-               'or my [github](https://github.com/feylinara/.pronounbot)*'
+               'or my [github](https://github.com/feylinara/.pronounbot)*';
   const embed = new RichEmbed()
     .setAuthor('Bontje the PronounBot')
-    .setDescription(helpText)
+    .setDescription(helpText);
   return embed;
-}
+};
 
 module.exports = { getUsage, getHelpText };
