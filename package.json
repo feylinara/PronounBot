@@ -11,11 +11,11 @@
     "author": "Fey naomi Schrewe",
     "license": "ISC",
     "dependencies": {
+        "async": "^3.1.0",
         "bufferutil": "^4.0.1",
         "discord.js": "^11.5.1",
         "pg": "^7.14.0",
         "postgrator-cli": "^3.3.0"
     },
-    "devDependencies": {
-    }
+    "devDependencies": {}
 }

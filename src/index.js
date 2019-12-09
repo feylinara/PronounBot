@@ -39,6 +39,61 @@ const filterOptions = (args, fallback) => {
   return [args, language];
 };
 
+const listPronouns = async (args, { author, channel }, serverSettings) => {
+  const language = filterOptions(args, serverSettings.primaryLanguage)[1];
+  const result = await database.listPronouns(language);
+  if (result.rows.length == 0) {
+    throw {
+      userfacing: true,
+      message: 'sorry, we don\'t have any pronouns for that language',
+    };
+  }
+  const pronouns = result.rows.map((row) => row.cases.join('/'));
+  const languageName = result.rows[0].language;
+  let first = 0;
+  const length = 20;
+  let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
+    .setDescription(`**Pronouns in ${languageName}**\n` +
+                                               pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'));
+  if (pronouns.length > length) {
+    embed = embed.setFooter('Navigate using ⬅️ and ➡️');
+  }
+  const message = await channel.send(embed);
+  await message.react('⬅️');
+  await message.react('➡️');
+  const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') &&
+                                   user.id === author.id;
+  const collector = message.createReactionCollector(filter, { time: 5 * 60 * 500 });
+  collector.on('collect', async (reaction) => {
+    if (reaction.emoji.name === '➡️') {
+      first += length;
+      if (first > pronouns.length) {
+        first = 0;
+      }
+      reaction.remove(author);
+
+      embed = new RichEmbed().setAuthor('Bontje the PronounBot')
+        .setDescription(`**Pronouns in ${languageName}**\n` +
+                                             pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
+        .setFooter('Navigate using ⬅️ and ➡️');
+      message.edit(embed);
+    }
+    if (reaction.emoji.name === '⬅️') {
+      first -= length;
+      if (first < 0) {
+        first = pronouns.length % length;
+      }
+      reaction.remove(author);
+
+      embed = new RichEmbed().setAuthor('Bontje the PronounBot')
+        .setDescription(`**Pronouns in ${languageName}**\n` +
+                                             pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
+        .setFooter('Navigate using ⬅️ and ➡️');
+      message.edit(embed);
+    }
+  });
+};
+
 const chooser = async ({ author, channel }, question, choices, choiceFormatter) => {
   const embed = new RichEmbed().setDescription(question);
   for (const i in choices) {
@@ -216,6 +271,8 @@ discordClient.on('message', async (message) => {
           } else {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
+        } else if (parse[1] == 'list') {
+          listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
           const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);

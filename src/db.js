@@ -73,6 +73,11 @@ class Database {
     const result = await this.db.query(queryString, [normaliseId(role.guild), role.name]);
     return result.rows.length != 0;
   }
+
+  listPronouns(language) {
+    const queryString = this.queries['pronouns.list'];
+    return this.db.query(queryString, [language]);
+  }
 }
 
 module.exports = { Database };
