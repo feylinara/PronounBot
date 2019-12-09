@@ -2,3 +2,4 @@ start.sh
 invite-link
 .saves/
 node_modules
+src/#*
