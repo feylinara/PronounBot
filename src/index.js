@@ -2,49 +2,22 @@ const { Client, RichEmbed, Permissions } = require('discord.js');
 const { queue } = require('async');
 const { Database } = require('./db.js');
 const { getHelpText, getUsage } = require('./help.js');
+const { chooser, filterOptions } = require('./util.js');
 
 const database = new Database();
+const { pronounAction } = require('./pronouns.js')(database);
+
 const discordClient = new Client();
 
 const defaultPrefix = '^';
 const defaultLanguage = 'eng';
 const commandWord = process.env.COMMANDWORD || 'pronouns';
 
-const serverQueues = {};
-
 const showError = async (errorMessage, channel) => {
   channel.send(`:space_invader: ${errorMessage}`);
 };
 
-const filterOptions = (args, fallback) => {
-  let language;
-  args = args.filter((el) => {
-    if (el.startsWith('language:') || el.startsWith('l:')) {
-      if (!language) {
-        if (el.startsWith('language:')) {
-          language = el.substring('language:'.length);
-        } else if (el.startsWith('l:')) {
-          language = el.substring('l:'.length);
-        }
-      } else {
-        throw {
-          message: 'I\'m sorry I can only deal with one language at a time',
-          userfacing: true,
-        };
-      }
-      return false;
-    } else {
-      return true;
-    }
-  });
-  if (!language) {
-    language = fallback;
-  }
-  return [args, language];
-};
-
 const generateEmbed = (pronouns, first, length, language) => {
-
   let nPages = Math.ceil(pronouns.length / length)
   let page = first / length + 1;
 
@@ -112,154 +85,6 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
   }
 };
 
-const chooser = async ({ author, channel }, question, choices, choiceFormatter) => {
-  const embed = new RichEmbed().setDescription(question);
-  for (const i in choices) {
-    embed.addField(`**${ +i + 1 }:** `, choiceFormatter(choices[i]));
-  }
-  await channel.send(embed);
-  const response = await channel.awaitMessages(
-    (message) => (!isNaN(message.content) && parseInt(message.content) < choices.length && message.author.id == author.id),
-    { maxMatches: 1, time: 5 * 60 * 500, errors: ['time'] },
-  );
-  const index = parseInt(response.first().content) - 1;
-  return choices[index];
-};
-
-const pronounRoleName = (pronoun, serverSettings) => {
-  const display = pronoun.cases.join('/');
-  let qualified = display;
-  if (pronoun.iso_639_3 != serverSettings.primaryLanguage) {
-    qualified = `${pronoun.iso_639_3}: ${display}`;
-  }
-  return [display, qualified];
-};
-
-const addPronounRole = async (pronoun, { member, channel, guild }, serverSettings) => {
-  const [display, qualified] = pronounRoleName(pronoun, serverSettings);
-
-  channel.send(`:space_invader: setting your pronouns to ${display}`);
-  const role = guild.roles.find((el) => el.name == qualified);
-  if (role) {
-    await member.addRole(role);
-  } else {
-    const newRole = await guild.createRole({ name: qualified });
-    await Promise.all([member.addRole(newRole), database.registerRole(newRole)]);
-  }
-};
-
-const addPronoun = async (args, { author, member, channel, guild }, serverSettings) => {
-  try {
-    const [argsParsed, language] = filterOptions(args, serverSettings.primaryLanguage);
-
-    const cases = argsParsed.map((x) => x.split('/')).reduce((a, b) => a.concat(b), []);
-
-    const pronouns = await database.getPronouns(cases, language);
-    if (pronouns.length == 0) {
-      throw {
-        message: 'Sorry, we don\'t have those pronouns in our db yet :(',
-        userfacing: true,
-      };
-    } else if (pronouns.length == 1) {
-      addPronounRole(pronouns[0], { member, channel, guild }, serverSettings);
-    } else {
-      const question = 'Unfortunately that\'s not enough to know what pronoun you want\nHere\'s the options we have for you:';
-      const pronounFormatter = (pronoun) => `${pronoun.cases.join('/')} *(${ pronoun.language })*`;
-      const choice = await chooser({ author, channel }, question, pronouns, pronounFormatter);
-      addPronounRole(choice, { member, channel, guild }, serverSettings);
-    }
-
-  } catch (e) {
-    if (e.userfacing) {
-      showError(e.message, channel);
-    } else {
-      throw e;
-    }
-  }
-};
-
-const countRole =
-  (role) => role.guild.members
-    .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
-    .size;
-
-const deletePronounRole = async (pronoun, { channel, member }, serverSettings) => {
-  const [display, qualified] = pronounRoleName(pronoun, serverSettings);
-  const role = member.roles.find((el) => el.name == qualified);
-  if (role != undefined) {
-    channel.send(`removing role ${display}`);
-    const numberUsers = countRole(role);
-    const [isRegistered] = await Promise.all([await database.isRegistered(role), member.removeRole(role)]);
-    if (isRegistered && numberUsers == 1) {
-      await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
-      channel.send('deleting role');
-    }
-  } else {
-    throw {
-      message: 'Sorry, you don\'t have that pronoun role :(',
-      userfacing: true,
-    };
-  }
-};
-
-const deletePronoun = async (args, { author, member, channel }, serverSettings) => {
-  try {
-    const [argsParsed, language] = filterOptions(args, serverSettings.primaryLanguage);
-
-    const cases = argsParsed.map((x) => x.split('/')).reduce((a, b) => a.concat(b), []);
-
-    let pronouns = await database.getPronouns(cases, language);
-    if (pronouns.length == 0) {
-      throw {
-        message: 'Sorry, we don\'t have those pronouns in our db yet, if you have it as a role a server mod must have given it to you :(',
-        userfacing: true,
-      };
-    } else if (pronouns.length == 1) {
-      await deletePronounRole(pronouns[0], { channel, member }, serverSettings);
-    } else {
-      pronouns = pronouns.filter((pronoun) => {
-        const qualified = pronounRoleName(pronoun, serverSettings)[1];
-        return member.roles.find((el) => el.name == qualified);
-      });
-      if (pronouns.length == 0) {
-        throw {
-          message: 'Sorry, you don\'t have that pronoun role :(',
-          userfacing: true,
-        };
-      } else if (pronouns.length == 1) {
-        await deletePronounRole(pronouns[0], { channel, member }, serverSettings);
-      } else {
-        const pronounFormatter = (pronoun) => `${pronoun.cases.join('/')} *(${ pronoun.language })*`;
-        const message = 'Unfortunately that\'s not enough to know what pronoun you want removed\nHere\'s the options we have for you:';
-        const choice = await chooser({ author, channel }, message, pronouns, pronounFormatter);
-        await deletePronounRole(choice, { channel, member }, serverSettings);
-      }
-    }
-
-  } catch (e) {
-    if (e.userfacing) {
-      showError(e.message, channel);
-    } else {
-      throw e;
-    }
-  }
-};
-
-const pronounWorker = async ({ action, args, message, serverSettings }) => {
-  if (action == 'add') {
-    await addPronoun(args, message, serverSettings);
-  } else if (action == 'delete') {
-    await deletePronoun(args, message, serverSettings);
-  }
-};
-
-const pronounAction = (action, args, message, serverSettings) => {
-  if (!serverQueues[message.guild.id]) {
-    serverQueues[message.guild.id] = queue(pronounWorker);
-  }
-  serverQueues[message.guild.id].push({ action, args, message, serverSettings });
-};
-
 discordClient.on('message', async (message) => {
   const guildId = parseInt(message.guild.id).toString(16);
   try {
@@ -289,6 +114,8 @@ discordClient.on('message', async (message) => {
           } else {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
+        } else if (parse[1] == 'languages' || parse[1] == 'langs') {
+          await listLanguages();
         } else if (parse[1] == 'list' || parse[1] == 'ls') {
           listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
