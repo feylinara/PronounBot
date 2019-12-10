@@ -23,7 +23,7 @@ themselves anything as a role.
 * Delete a pronoun role from your roles
   Use as `^pronouns delete <pronoun> [language:<language>]`, for example `^pronouns delete vi/ver` or `pronoun delete x language:German`
 * List the pronouns we know for a language
-* `^pronouns list <pronoun> [language:<language>]`
+ `^pronouns list <pronoun> [language:<language>]`
 * Show a help screen
   Use as `^pronouns help`
 
