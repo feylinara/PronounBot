@@ -43,6 +43,23 @@ const filterOptions = (args, fallback) => {
   return [args, language];
 };
 
+const generateEmbed = (pronouns, first, length, language) => {
+
+  let nPages = Math.ceil(pronouns.length / length)
+  let page = first / length + 1;
+
+  let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
+    .setDescription(`**Pronouns in ${language}** *page ${page}/${nPages}*\n\n` +
+                    pronouns.slice(first, Math.min(pronouns.length, first + length))
+                            .map((x) => `- ${x}`)
+                            .join('\n'));
+  if (pronouns.length > length) {
+    embed = embed.setFooter('Navigate using ⬅️ and ➡️');
+  }
+
+  return embed;
+}
+
 const listPronouns = async (args, { author, channel }, serverSettings) => {
   const language = filterOptions(args, serverSettings.primaryLanguage)[1];
   const result = await database.listPronouns(language);
@@ -66,47 +83,33 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
 
   let nPages = Math.ceil(pronouns.length / length)
 
-  let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-    .setDescription(`**Pronouns in ${languageName}** *page 1/${nPages}*\n\n` +
-                                               pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'));
-  if (pronouns.length > length) {
-    embed = embed.setFooter('Navigate using ⬅️ and ➡️');
-  }
-  const message = await channel.send(embed);
+  const message = await channel.send(generateEmbed(pronouns, first, length, languageName));
   await message.react('⬅️');
   await message.react('➡️');
-  const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') &&
-                                   user.id === author.id;
-  const collector = message.createReactionCollector(filter, { time: 5 * 60 * 500 });
-  collector.on('collect', async (reaction) => {
-    if (reaction.emoji.name === '➡️') {
-      first += length;
-      if (first > pronouns.length) {
-        first = 0;
+  if (pronouns.length > length) {
+    const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') &&
+                                     user.id === author.id;
+    const collector = message.createReactionCollector(filter, { time: 5 * 60 * 500 });
+    collector.on('collect', async (reaction) => {
+      if (reaction.emoji.name === '➡️') {
+        first += length;
+        if (first > pronouns.length) {
+          first = 0;
+        }
+
+        await Promise.all([message.edit(generateEmbed(pronouns, first, length, languageName)), reaction.remove(author)]);
       }
+      if (reaction.emoji.name === '⬅️') {
+        first -= length;
+        if (first < 0) {
+          first = pronouns.length % length;
+        }
+        let page = first / length + 1;
 
-      let page = first / length + 1;
-
-      embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-        .setDescription(`**Pronouns in ${languageName}** *page ${page}/${nPages}*\n\n` +
-                                             pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
-        .setFooter('Navigate using ⬅️ and ➡️');
-      await Promise.all([message.edit(embed), reaction.remove(author)]);
-    }
-    if (reaction.emoji.name === '⬅️') {
-      first -= length;
-      if (first < 0) {
-        first = pronouns.length % length;
+        await Promise.all([message.edit(generateEmbed(pronouns, first, length, languageName)), reaction.remove(author)]);
       }
-      let page = first / length + 1;
-
-      embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-        .setDescription(`**Pronouns in ${languageName}** *page ${page}/${nPages}*\n\n` +
-                        pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
-        .setFooter('Navigate using ⬅️ and ➡️');
-      await Promise.all([message.edit(embed), reaction.remove(author)]);
-    }
-  });
+    });
+  }
 };
 
 const chooser = async ({ author, channel }, question, choices, choiceFormatter) => {
