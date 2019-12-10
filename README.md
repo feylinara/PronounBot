@@ -27,6 +27,8 @@ themselves anything as a role.
 * List the pronouns we know for a language. Use as `^pronouns
  list [language:<language>]`, for example `^pronouns
  list language:Dutch`
+* List what languages we know how many pronouns for. Use as `^pronouns
+  languages`
 * Show a help screen.
   Use as `^pronouns help`
 

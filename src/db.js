@@ -78,6 +78,11 @@ class Database {
     const queryString = this.queries['pronouns.list'];
     return this.db.query(queryString, [language]);
   }
+
+  countPronouns() {
+    const queryString = this.queries['language.list'];
+    return this.db.query(queryString, []);
+  }
 }
 
 module.exports = { Database };

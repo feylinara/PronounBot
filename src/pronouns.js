@@ -1,7 +1,5 @@
-const { Client, RichEmbed, Permissions } = require('discord.js');
 const { queue } = require('async');
-const { Database } = require('./db.js');
-const { filterOptions, chooser } = require('./util.js');
+const { filterOptions, chooser, showError } = require('./util.js');
 
 module.exports = (database) => {
   const serverQueues = {};
@@ -60,8 +58,8 @@ module.exports = (database) => {
 
   const countRole =
     (role) => role.guild.members
-                  .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
-                  .size;
+      .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
+      .size;
 
   const deletePronounRole = async (pronoun, { channel, member }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
@@ -141,4 +139,4 @@ module.exports = (database) => {
   };
 
   return module.exports = { pronounAction };
-}
+};

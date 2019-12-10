@@ -45,6 +45,8 @@ const getHelpText = (commandWord, serverSettings, config) => {
     '**List:** Show the pronouns we know for your language *(aliases: ls)*\n' +
     getUsage('list', commandWord, serverSettings) +
     '\n\n' +
+    '**Languages:** Show a list of the languages we have pronouns for' +
+    '\n\n' +
     '**Help:** Show this help screen';
   if (config) {
     helpText +=
