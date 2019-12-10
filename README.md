@@ -27,7 +27,7 @@ themselves anything as a role.
 * List the pronouns we know for a language. Use as `^pronouns
  list [language:<language>]`, for example `^pronouns
  list language:Dutch`
-* Show a help screen
+* Show a help screen.
   Use as `^pronouns help`
 
 ### Config Options
@@ -35,9 +35,9 @@ themselves anything as a role.
 Options to configure how PronounBot acts in your server. Can only be
 used by users with *Manage Server* permissions
 
-* Set a server prefix Use as `^pronouns prefix <prefix>`, for example
+* Set a server prefix. Use as `^pronouns prefix <prefix>`, for example
   `^pronouns prefix !`
-* Set the server's primary language Use as `^pronouns language
+* Set the server's primary language. Use as `^pronouns language
   <language>`, for example `^pronouns language German`
 
 ## Setting Up
