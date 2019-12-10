@@ -63,8 +63,11 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
   const languageName = result.rows[0].language;
   let first = 0;
   const length = 20;
+
+  let nPages = Math.ceil(pronouns.length / length)
+
   let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-    .setDescription(`**Pronouns in ${languageName}**\n` +
+    .setDescription(`**Pronouns in ${languageName}** *page 0/${nPages}*\n\n` +
                                                pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'));
   if (pronouns.length > length) {
     embed = embed.setFooter('Navigate using ⬅️ and ➡️');
@@ -81,26 +84,27 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
       if (first > pronouns.length) {
         first = 0;
       }
-      reaction.remove(author);
+
+      let page = first / length + 1;
 
       embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-        .setDescription(`**Pronouns in ${languageName}**\n` +
+        .setDescription(`**Pronouns in ${languageName}** *page ${page}/${nPages}*\n\n` +
                                              pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
         .setFooter('Navigate using ⬅️ and ➡️');
-      message.edit(embed);
+      await Promise.all([message.edit(embed), reaction.remove(author)]);
     }
     if (reaction.emoji.name === '⬅️') {
       first -= length;
       if (first < 0) {
         first = pronouns.length % length;
       }
-      reaction.remove(author);
+      let page = first / length + 1;
 
       embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-        .setDescription(`**Pronouns in ${languageName}**\n` +
+        .setDescription(`**Pronouns in ${languageName}** *page ${page}/${nPages}*\n\n` +
                         pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
         .setFooter('Navigate using ⬅️ and ➡️');
-      message.edit(embed);
+      await Promise.all([message.edit(embed), reaction.remove(author)]);
     }
   });
 };
