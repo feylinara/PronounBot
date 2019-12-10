@@ -18,7 +18,7 @@ const getExample = (command, commandWord, serverSettings) => {
 const getUsage = (command, commandWord, serverSettings) => {
   const commandPrefix = `${serverSettings.prefix}${commandWord}`;
   if (command == 'add' || command == 'delete') {
-    return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>/l:<language>]\`, ` +
+    return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>]\`, ` +
          `for example ${getExample(command, commandWord, serverSettings)}`;
   } else if (command == 'prefix') {
     return `Use as \`${commandPrefix} config prefix <prefix>\`, ` +
@@ -36,6 +36,16 @@ const getHelpText = (commandWord, serverSettings, config) => {
   let helpText =
     '***Help for PronounBot***\n' +
     '\n' +
+    '**General Info:**\n\n' +
+    'Bontje is a bot to manage pronoun roles' +
+    '\n' +
+    'All commands that take a language flag can talke `language:<language>`, `lang:<language>` or `l:<language>`, ' +
+    'where language can be an iso code (like *deu* or *de*) or the English name (like *German*)' +
+    '\n' +
+    'Where commands take pronouns you do not have to enter all forms of a pronoun, Bontje will guess, ' +
+    'and ask when there\'s multiple possibilities' +
+    '\n\n' +
+    '***Commands:***\n\n' +
     '**Add:** Add a pronoun role to your roles\n' +
     getUsage('add', commandWord, serverSettings) +
     '\n\n' +
