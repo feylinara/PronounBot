@@ -26,6 +26,9 @@ const getUsage = (command, commandWord, serverSettings) => {
   } else if (command == 'language') {
     return `Use as \`${commandPrefix} config language <language>\`, ` +
       `for example \`${commandPrefix} config language ${examples[Math.floor(Math.random() * examples.length)].language}\``;
+  } else if (command == 'list') {
+    return `Use as \`${commandPrefix} list [<language>]\`, ` +
+      `for example \`${commandPrefix} list language:${examples[Math.floor(Math.random() * examples.length)].language}\``;
   }
 };
 
@@ -38,6 +41,9 @@ const getHelpText = (commandWord, serverSettings, config) => {
     '\n\n' +
     '**Delete:** Delete a pronoun role from your roles\n' +
     getUsage('delete', commandWord, serverSettings) +
+    '\n\n' +
+    '**List:** Show the pronouns we know for your language\n' +
+    getUsage('list', commandWord, serverSettings) +
     '\n\n' +
     '**Help:** Show this help screen';
   if (config) {
