@@ -67,7 +67,7 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
   let nPages = Math.ceil(pronouns.length / length)
 
   let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-    .setDescription(`**Pronouns in ${languageName}** *page 0/${nPages}*\n\n` +
+    .setDescription(`**Pronouns in ${languageName}** *page 1/${nPages}*\n\n` +
                                                pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'));
   if (pronouns.length > length) {
     embed = embed.setFooter('Navigate using ⬅️ and ➡️');
