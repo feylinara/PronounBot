@@ -1,8 +1,7 @@
 const { Client, RichEmbed, Permissions } = require('discord.js');
-const { queue } = require('async');
 const { Database } = require('./db.js');
 const { getHelpText, getUsage } = require('./help.js');
-const { chooser, filterOptions } = require('./util.js');
+const { chooser, filterOptions, showError, paginate } = require('./util.js');
 
 const database = new Database();
 const { pronounAction } = require('./pronouns.js')(database);
@@ -13,25 +12,21 @@ const defaultPrefix = '^';
 const defaultLanguage = 'eng';
 const commandWord = process.env.COMMANDWORD || 'pronouns';
 
-const showError = async (errorMessage, channel) => {
-  channel.send(`:space_invader: ${errorMessage}`);
-};
-
 const generateEmbed = (pronouns, first, length, language) => {
-  let nPages = Math.ceil(pronouns.length / length)
-  let page = first / length + 1;
+  const nPages = Math.ceil(pronouns.length / length);
+  const page = first / length + 1;
 
   let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-    .setDescription(`**Pronouns in ${language}** *page ${page}/${nPages}*\n\n` +
-                    pronouns.slice(first, Math.min(pronouns.length, first + length))
-                            .map((x) => `- ${x}`)
-                            .join('\n'));
+    .setDescription(`**pronouns in ${language}** *page ${page}/${nPages}*\n\n` +
+                                             pronouns.slice(first, Math.min(pronouns.length, first + length))
+                                               .map((x) => `- ${x}`)
+                                               .join('\n'));
   if (pronouns.length > length) {
     embed = embed.setFooter('Navigate using ⬅️ and ➡️');
   }
 
   return embed;
-}
+};
 
 const listPronouns = async (args, { author, channel }, serverSettings) => {
   const language = filterOptions(args, serverSettings.primaryLanguage)[1];
@@ -43,46 +38,27 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
     };
   }
   const pronouns = result.rows.map((row) => row.cases
-                                               .join('/')
-                                               .replace(/\*/g, '\\*')
-                                               .replace(/_/g, "\\_")
-                                               .replace(/~/g, "\\~")
-                                               .replace(/>/g, "\\>")
-                                               .replace(/\|/g, "\\|")
-                                               .replace(/`/g, "\\`"));
+    .join('/')
+    .replace(/\*/g, '\\*')
+    .replace(/_/g, '\\_')
+    .replace(/~/g, '\\~')
+    .replace(/>/g, '\\>')
+    .replace(/\|/g, '\\|')
+    .replace(/`/g, '\\`'));
+  let formatter = (x) => `- ${x}`;
   const languageName = result.rows[0].language;
-  let first = 0;
-  const length = 20;
+  const title = `**Pronouns in ${languageName}**`;
 
-  let nPages = Math.ceil(pronouns.length / length)
+  await paginate(pronouns, formatter, title, { channel, author });
+};
 
-  const message = await channel.send(generateEmbed(pronouns, first, length, languageName));
-  await message.react('⬅️');
-  await message.react('➡️');
-  if (pronouns.length > length) {
-    const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') &&
-                                     user.id === author.id;
-    const collector = message.createReactionCollector(filter, { time: 5 * 60 * 500 });
-    collector.on('collect', async (reaction) => {
-      if (reaction.emoji.name === '➡️') {
-        first += length;
-        if (first > pronouns.length) {
-          first = 0;
-        }
+const listLanguages = async ({ channel, author }) => {
+  const languages = (await database.countPronouns()).rows;
 
-        await Promise.all([message.edit(generateEmbed(pronouns, first, length, languageName)), reaction.remove(author)]);
-      }
-      if (reaction.emoji.name === '⬅️') {
-        first -= length;
-        if (first < 0) {
-          first = pronouns.length % length;
-        }
-        let page = first / length + 1;
+  const title = `**Languages we support**`;
+  const formatter = ({language, pronouns}) => `${language}: ${pronouns} pronouns`;
 
-        await Promise.all([message.edit(generateEmbed(pronouns, first, length, languageName)), reaction.remove(author)]);
-      }
-    });
-  }
+  await paginate(languages, formatter, title, { channel, author });
 };
 
 discordClient.on('message', async (message) => {
@@ -115,7 +91,7 @@ discordClient.on('message', async (message) => {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'languages' || parse[1] == 'langs') {
-          await listLanguages();
+          await listLanguages(message);
         } else if (parse[1] == 'list' || parse[1] == 'ls') {
           listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
