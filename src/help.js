@@ -18,7 +18,7 @@ const getExample = (command, commandWord, serverSettings) => {
 const getUsage = (command, commandWord, serverSettings) => {
   const commandPrefix = `${serverSettings.prefix}${commandWord}`;
   if (command == 'add' || command == 'delete') {
-    return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>]\`, ` +
+    return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>/l:<language>]\`, ` +
          `for example ${getExample(command, commandWord, serverSettings)}`;
   } else if (command == 'prefix') {
     return `Use as \`${commandPrefix} config prefix <prefix>\`, ` +
@@ -39,10 +39,10 @@ const getHelpText = (commandWord, serverSettings, config) => {
     '**Add:** Add a pronoun role to your roles\n' +
     getUsage('add', commandWord, serverSettings) +
     '\n\n' +
-    '**Delete:** Delete a pronoun role from your roles\n' +
+    '**Delete:** Delete a pronoun role from your roles *(aliases: remove, del, rm)*\n' +
     getUsage('delete', commandWord, serverSettings) +
     '\n\n' +
-    '**List:** Show the pronouns we know for your language\n' +
+    '**List:** Show the pronouns we know for your language *(aliases: ls)*\n' +
     getUsage('list', commandWord, serverSettings) +
     '\n\n' +
     '**Help:** Show this help screen';
@@ -58,7 +58,7 @@ const getHelpText = (commandWord, serverSettings, config) => {
   }
   helpText +=
     '*If you have any feedback or bug reports please tell me on my [discord server](https://discord.gg/UcjkRJq) ' +
-               'or my [github](https://github.com/feylinara/.pronounbot)*';
+               'or my [github](https://github.com/feylinara/pronounbot)*';
   const embed = new RichEmbed()
     .setAuthor('Bontje the PronounBot')
     .setDescription(helpText);

@@ -19,9 +19,13 @@ const showError = async (errorMessage, channel) => {
 const filterOptions = (args, fallback) => {
   let language;
   args = args.filter((el) => {
-    if (el.startsWith('language:')) {
+    if (el.startsWith('language:') || el.startsWith('l:')) {
       if (!language) {
-        language = el.substring('language:'.length);
+        if (el.startsWith('language:')) {
+          language = el.substring('language:'.length);
+        } else if (el.startsWith('l:')) {
+          language = el.substring('l:'.length);
+        }
       } else {
         throw {
           message: 'I\'m sorry I can only deal with one language at a time',
@@ -48,7 +52,14 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
       message: 'sorry, we don\'t have any pronouns for that language',
     };
   }
-  const pronouns = result.rows.map((row) => row.cases.join('/'));
+  const pronouns = result.rows.map((row) => row.cases
+                                               .join('/')
+                                               .replace(/\*/g, '\\*')
+                                               .replace(/_/g, "\\_")
+                                               .replace(/~/g, "\\~")
+                                               .replace(/>/g, "\\>")
+                                               .replace(/\|/g, "\\|")
+                                               .replace(/`/g, "\\`"));
   const languageName = result.rows[0].language;
   let first = 0;
   const length = 20;
@@ -87,7 +98,7 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
 
       embed = new RichEmbed().setAuthor('Bontje the PronounBot')
         .setDescription(`**Pronouns in ${languageName}**\n` +
-                                             pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
+                        pronouns.slice(first, Math.min(pronouns.length, first + length)).join('\n'))
         .setFooter('Navigate using ⬅️ and ➡️');
       message.edit(embed);
     }
@@ -265,18 +276,18 @@ discordClient.on('message', async (message) => {
           } else {
             await pronounAction('add', parse.slice(2), message, serverSettings);
           }
-        } else if (parse[1] == 'delete') {
+        } else if (parse[1] == 'delete' || parse[1] == 'remove' || parse[1] == 'rm') {
           if (parse.length < 3) {
             await showError(getUsage('delete', commandWord, serverSettings), message.channel);
           } else {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
-        } else if (parse[1] == 'list') {
+        } else if (parse[1] == 'list' || parse[1] == 'ls') {
           listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
           const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
-        } else if (parse[1] == 'config') {
+        } else if (parse[1] == 'config' || parse[1] == 'config') {
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
             if (parse[2] == 'prefix') {
               if (parse.length < 4) {
