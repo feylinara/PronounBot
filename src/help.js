@@ -2,9 +2,9 @@ const { RichEmbed } = require('discord.js');
 
 const examples = [
   { pronoun: 'she/her', language: 'English', iso: 'eng' },
-  { pronoun: 'nin/nim', language: 'Deutsch', iso: 'deu' },
+  { pronoun: 'nin/nim', language: 'German', iso: 'deu' },
   { pronoun: 'vij', language: 'nld', iso: 'nld' },
-  { pronoun: 'elle', language: 'Spanish', iso: 'spa' },
+  /* { pronoun: 'elle', language: 'Spanish', iso: 'spa' }, */
 ];
 
 const getExample = (command, commandWord, serverSettings) => {
