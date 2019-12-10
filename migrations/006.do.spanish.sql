@@ -1,0 +1,10 @@
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ele}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ell_}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ell*}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ellæ}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ell@}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{elle}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{elli}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ellu}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ellx}');
+INSERT INTO pronouns (language, cases) VALUES ('spa', '{ol, olles}');
