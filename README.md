@@ -18,12 +18,14 @@ themselves anything as a role.
 ## Usage
 
 ### User Options
-* Add a pronoun role to your roles\n +
-  Use as `^pronouns add <pronoun> [language:<language>]`, for example `^pronouns add ` or `pronouns add hen language:German`
-* Delete a pronoun role from your roles
-  Use as `^pronouns delete <pronoun> [language:<language>]`, for example `^pronouns delete vi/ver` or `pronoun delete x language:German`
-* List the pronouns we know for a language
- `^pronouns list <pronoun> [language:<language>]`
+* Add a pronoun role to your roles\n + Use as `^pronouns add <pronoun>
+  [language:<language>]`, for example `^pronouns add ` or `pronouns
+  add hen language:German`
+* Delete a pronoun role from your roles Use as `^pronouns delete
+  <pronoun> [language:<language>]`, for example `^pronouns delete
+  vi/ver` or `pronoun delete x language:German`
+* List the pronouns we know for a language, for example `^pronouns
+ list <pronoun> [language:<language>]`
 * Show a help screen
   Use as `^pronouns help`
 
