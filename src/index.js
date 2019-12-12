@@ -76,7 +76,7 @@ discordClient.on('message', async (message) => {
     // split by space keeping quote-wrapped strings
     let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g);
     if (parse) {
-      parse = parse.map((x) => x.replace(/"/g, ''));
+      parse = parse.map((x) => x.replace(/"/g, '').toLowerCase());
       if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
         if (parse[1] == 'add') {
           if (parse.length < 3) {
