@@ -12,22 +12,6 @@ const defaultPrefix = '^';
 const defaultLanguage = 'eng';
 const commandWord = process.env.COMMANDWORD || 'pronouns';
 
-const generateEmbed = (pronouns, first, length, language) => {
-  const nPages = Math.ceil(pronouns.length / length);
-  const page = first / length + 1;
-
-  let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-    .setDescription(`**pronouns in ${language}** *page ${page}/${nPages}*\n\n` +
-                                             pronouns.slice(first, Math.min(pronouns.length, first + length))
-                                               .map((x) => `- ${x}`)
-                                               .join('\n'));
-  if (pronouns.length > length) {
-    embed = embed.setFooter('Navigate using ⬅️ and ➡️');
-  }
-
-  return embed;
-};
-
 const listPronouns = async (args, { author, channel }, serverSettings) => {
   const language = filterOptions(args, serverSettings.primaryLanguage)[1];
   const result = await database.listPronouns(language);
