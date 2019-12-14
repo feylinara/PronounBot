@@ -5,7 +5,14 @@ module.exports = (database) => {
   const serverQueues = {};
 
   const pronounRoleName = (pronoun, serverSettings) => {
-    const display = pronoun.cases.join('/');
+    const display = pronoun.cases
+                           .join('/')
+                           .replace(/\*/g, '\\*')
+                           .replace(/_/g, '\\_')
+                           .replace(/~/g, '\\~')
+                           .replace(/>/g, '\\>')
+                           .replace(/\|/g, '\\|')
+                           .replace(/`/g, '\\`');
     let qualified = display;
     if (pronoun.iso_639_3 != serverSettings.primaryLanguage) {
       qualified = `${pronoun.iso_639_3}: ${display}`;
@@ -16,7 +23,6 @@ module.exports = (database) => {
   const addPronounRole = async (pronoun, { member, channel, guild }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
 
-    channel.send(`:space_invader: setting your pronouns to ${display}`);
     const role = guild.roles.find((el) => el.name == qualified);
     if (role) {
       await member.addRole(role);
@@ -24,6 +30,7 @@ module.exports = (database) => {
       const newRole = await guild.createRole({ name: qualified });
       await Promise.all([member.addRole(newRole), database.registerRole(newRole)]);
     }
+    await channel.send(`:space_invader: set your pronouns to *${display}*, ${member.nickname || member.user.username}`);
   };
 
   const addPronoun = async (args, { author, member, channel, guild }, serverSettings) => {
@@ -39,17 +46,17 @@ module.exports = (database) => {
           userfacing: true,
         };
       } else if (pronouns.length == 1) {
-        addPronounRole(pronouns[0], { member, channel, guild }, serverSettings);
+        await addPronounRole(pronouns[0], { member, channel, guild }, serverSettings);
       } else {
         const question = 'Unfortunately that\'s not enough to know what pronoun you want\nHere\'s the options we have for you:';
         const pronounFormatter = (pronoun) => `${pronoun.cases.join('/')} *(${ pronoun.language })*`;
         const choice = await chooser({ author, channel }, question, pronouns, pronounFormatter);
-        addPronounRole(choice, { member, channel, guild }, serverSettings);
+        await addPronounRole(choice, { member, channel, guild }, serverSettings);
       }
 
     } catch (e) {
       if (e.userfacing) {
-        showError(e.message, channel);
+        await showError(e.message, channel, member.user);
       } else {
         throw e;
       }
@@ -65,13 +72,12 @@ module.exports = (database) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
     const role = member.roles.find((el) => el.name == qualified);
     if (role != undefined) {
-      channel.send(`removing role ${display}`);
       const numberUsers = countRole(role);
       const [isRegistered] = await Promise.all([await database.isRegistered(role), member.removeRole(role)]);
       if (isRegistered && numberUsers == 1) {
         await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
-        channel.send('deleting role');
       }
+    await channel.send(`:space_invader: removed *${display}* from your pronouns, ${member.nickname || member.user.username}`);
     } else {
       throw {
         message: 'Sorry, you don\'t have that pronoun role :(',
@@ -116,7 +122,7 @@ module.exports = (database) => {
 
     } catch (e) {
       if (e.userfacing) {
-        showError(e.message, channel);
+        await showError(e.message, channel, author);
       } else {
         throw e;
       }

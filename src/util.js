@@ -1,14 +1,10 @@
-const { RichEmbed } = require('discord.js');
 const Integer = require('integer');
+const { embed, showError } = require('./branding.js');
 
 const normaliseId = (guild) => Integer(guild.id).toString(16);
 
-const showError = async (errorMessage, channel) => {
-  channel.send(`:space_invader: ${errorMessage}`);
-};
-
 const chooser = async ({ author, channel }, question, choices, choiceFormatter) => {
-  const embed = new RichEmbed().setDescription(question);
+  const embed = embed().setDescription(question);
   for (const i in choices) {
     embed.addField(`**${ +i + 1 }:** `, choiceFormatter(choices[i]));
   }
@@ -53,16 +49,16 @@ const paginate = async (rows, formatter, title, { channel, author }) => {
     const nPages = Math.ceil(rows.length / length);
     const page = first / length + 1;
 
-    let embed = new RichEmbed().setAuthor('Bontje the PronounBot')
-                               .setDescription(`${title} ${page}/${nPages}\n\n` +
-                                               rows.slice(first, Math.min(rows.length, first + length))
-                                                       .map((x) => formatter(x))
-                                                       .join('\n'));
+    let embedRet = embed()
+      .setDescription(`${title} ${rows.length > length ?  `${page}/${nPages}` : ''}\n\n` +
+                      rows.slice(first, Math.min(rows.length, first + length))
+                          .map((x) => formatter(x))
+                          .join('\n'));
     if (rows.length > length) {
-      embed = embed.setFooter('Navigate using ⬅️ and ➡️');
+      embedRet = embedRet.setFooter('Navigate using ⬅️ and ➡️');
     }
 
-    return embed;
+    return embedRet;
   };
 
   let first = 0;

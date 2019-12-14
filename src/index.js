@@ -1,4 +1,4 @@
-const { Client, RichEmbed, Permissions } = require('discord.js');
+const { Client, Permissions } = require('discord.js');
 const { Database } = require('./db.js');
 const { getHelpText, getUsage } = require('./help.js');
 const { chooser, filterOptions, showError, paginate, normaliseId } = require('./util.js');
@@ -66,13 +66,13 @@ discordClient.on('message', async (message) => {
       if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
         if (parse[1] == 'add') {
           if (parse.length < 3) {
-            await showError(getUsage('add', commandWord, serverSettings), message.channel);
+            await showError(getUsage('add', commandWord, serverSettings), message.channel, message.author);
           } else {
             await pronounAction('add', parse.slice(2), message, serverSettings);
           }
         } else if (parse[1] == 'delete' || parse[1] == 'remove' || parse[1] == 'rm') {
           if (parse.length < 3) {
-            await showError(getUsage('delete', commandWord, serverSettings), message.channel);
+            await showError(getUsage('delete', commandWord, serverSettings), message.channel, message.author);
           } else {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
@@ -87,18 +87,18 @@ discordClient.on('message', async (message) => {
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
             if (parse[2] == 'prefix') {
               if (parse.length < 4) {
-                showError(getUsage('prefix', commandWord, serverSettings), message.channel);
+                await showError(getUsage('prefix', commandWord, serverSettings), message.channel, message.author);
               } else {
                 await database.updatePrefix(guildId, parse[3]);
-                await message.channel.send(`changed prefix to ${parse[3]}`);
+                await message.channel.send(`changed server prefix to ${parse[3]}`);
               }
             } else if (parse[2] == 'language') {
               const languages = await database.getLanguage(parse[3]);
               if (languages.length == 0) {
-                showError('I\'m sorry, I don\'t know that language (unfortunately autonyms aren\'t supported yet, so please use the English name for now) :(', message.channel);
+                await showError('I\'m sorry, I don\'t know that language (unfortunately autonyms aren\'t supported yet, so please use the English name for now) :(', message.channel, message.author);
               } else if (languages.length == 1) {
-                await message.channel.send(`Setting your language to ${languages[0].name} [${languages[0].iso_639_3}]`);
                 await database.updatePrimaryLanguage(languages[0].iso_639_3);
+                await message.channel.send(`set server language to ${languages[0].name} [${languages[0].iso_639_3}]`);
               } else {
                 const question = 'We have several languages that match that name.\nWhich one do you want?';
                 const choice = await chooser(message, question, languages, (language) => `${language.name} [${language.iso_639_3}]`);
@@ -106,7 +106,7 @@ discordClient.on('message', async (message) => {
               }
             }
           } else {
-            await showError('I\'m sorry, you don\'t have permission to do this :(', message.channel);
+            await showError('I\'m sorry, you don\'t have permission to do this :(', message.channel, message.author);
           }
         }
       }
