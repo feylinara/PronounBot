@@ -1,4 +1,7 @@
 const { RichEmbed } = require('discord.js');
+const Integer = require('integer');
+
+const normaliseId = (guild) => Integer(guild.id).toString(16);
 
 const showError = async (errorMessage, channel) => {
   channel.send(`:space_invader: ${errorMessage}`);
@@ -89,4 +92,4 @@ const paginate = async (rows, formatter, title, { channel, author }) => {
   }
 };
 
-module.exports = { chooser, filterOptions, showError, paginate };
+module.exports = { chooser, filterOptions, showError, paginate, normaliseId };

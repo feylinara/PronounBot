@@ -1,7 +1,7 @@
 const { Client, RichEmbed, Permissions } = require('discord.js');
 const { Database } = require('./db.js');
 const { getHelpText, getUsage } = require('./help.js');
-const { chooser, filterOptions, showError, paginate } = require('./util.js');
+const { chooser, filterOptions, showError, paginate, normaliseId } = require('./util.js');
 
 const database = new Database();
 const { pronounAction } = require('./pronouns.js')(database);
@@ -62,7 +62,7 @@ const listLanguages = async ({ channel, author }) => {
 };
 
 discordClient.on('message', async (message) => {
-  const guildId = parseInt(message.guild.id).toString(16);
+  const guildId = normaliseId(message.guild);
   try {
     let serverSettings = await database.getServerSettings(guildId);
     let initServerPromise = Promise.resolve();

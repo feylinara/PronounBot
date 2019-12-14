@@ -1,4 +1,5 @@
 const { readdirSync, readFileSync, openSync } = require('fs');
+const { normaliseId } = require('./util.js');
 const { Pool } = require('pg');
 
 const loadQueries = () => {
@@ -11,8 +12,6 @@ const loadQueries = () => {
   }
   return queries;
 };
-
-const normaliseId = (guild) => parseInt(guild.id).toString(16);
 
 class Database {
   constructor() {
