@@ -10,6 +10,7 @@
     },
     "author": "Fey naomi Schrewe",
     "license": "ISC",
+    "repository": "https://github.com/feylinara/PronounBot",
     "dependencies": {
         "async": "^3.1.0",
         "bufferutil": "^4.0.1",
