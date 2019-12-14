@@ -4,11 +4,11 @@ const { embed, showError } = require('./branding.js');
 const normaliseId = (guild) => Integer(guild.id).toString(16);
 
 const chooser = async ({ author, channel }, question, choices, choiceFormatter) => {
-  const embed = embed().setDescription(question);
+  const embedRet = embed().setDescription(question);
   for (const i in choices) {
-    embed.addField(`**${ +i + 1 }:** `, choiceFormatter(choices[i]));
+    embedRet.addField(`**${ +i + 1 }:** `, choiceFormatter(choices[i]));
   }
-  await channel.send(embed);
+  await channel.send(embedRet);
   const response = await channel.awaitMessages(
     (message) => (!isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id),
     { maxMatches: 1, time: 5 * 60 * 500, errors: ['time'] },
