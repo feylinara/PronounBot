@@ -65,14 +65,16 @@ discordClient.on('message', async (message) => {
   const guildId = parseInt(message.guild.id).toString(16);
   try {
     let serverSettings = await database.getServerSettings(guildId);
+    let initServerPromise = Promise.resolve();
     if (serverSettings == null) {
-      database.initServerSettings(guildId, defaultPrefix, defaultLanguage);
+      initServerPromise = database.initServerSettings(guildId, defaultPrefix, defaultLanguage);
       serverSettings = {
         prefix: defaultPrefix,
         primaryLanguage: defaultLanguage,
         abuseProtect: true,
       };
     }
+
     // split by space keeping quote-wrapped strings
     let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g);
     if (parse) {
@@ -93,7 +95,7 @@ discordClient.on('message', async (message) => {
         } else if (parse[1] == 'languages' || parse[1] == 'langs') {
           await listLanguages(message);
         } else if (parse[1] == 'list' || parse[1] == 'ls') {
-          listPronouns(parse, message, serverSettings);
+          await listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
           const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
@@ -104,14 +106,14 @@ discordClient.on('message', async (message) => {
                 showError(getUsage('prefix', commandWord, serverSettings), message.channel);
               } else {
                 await database.updatePrefix(guildId, parse[3]);
-                message.channel.send(`changed prefix to ${parse[3]}`);
+                await message.channel.send(`changed prefix to ${parse[3]}`);
               }
             } else if (parse[2] == 'language') {
               const languages = await database.getLanguage(parse[3]);
               if (languages.length == 0) {
                 showError('I\'m sorry, I don\'t know that language (unfortunately autonyms aren\'t supported yet, so please use the English name for now) :(', message.channel);
               } else if (languages.length == 1) {
-                message.channel.send(`Setting your language to ${languages[0].name} [${languages[0].iso_639_3}]`);
+                await message.channel.send(`Setting your language to ${languages[0].name} [${languages[0].iso_639_3}]`);
                 await database.updatePrimaryLanguage(languages[0].iso_639_3);
               } else {
                 const question = 'We have several languages that match that name.\nWhich one do you want?';
@@ -120,18 +122,19 @@ discordClient.on('message', async (message) => {
               }
             }
           } else {
-            showError('I\'m sorry, you don\'t have permission to do this :(', message.channel);
+            await showError('I\'m sorry, you don\'t have permission to do this :(', message.channel);
           }
         }
       }
     }
+    await initServerPromise;
   } catch (e) {
     console.log(e);
   }
 });
 
-discordClient.on('ready', () => {
-  discordClient.user.setPresence({ game: { name: 'Gender: Hard Mode' } });
+discordClient.on('ready', async () => {
+  await discordClient.user.setPresence({ game: { name: 'Gender: Hard Mode' } });
 });
 
 discordClient.login(process.env.DISCORDSECRET);
