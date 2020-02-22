@@ -50,7 +50,7 @@ const paginate = async (rows, formatter, title, { channel, author }) => {
     const page = first / length + 1;
 
     let embedRet = embed()
-      .setDescription(`${title} ${rows.length > length ?  `${page}/${nPages}` : ''}\n\n` +
+      .setDescription(`${title} ${rows.length > length ? `${page}/${nPages}` : ''}\n\n` +
                       rows.slice(first, Math.min(rows.length, first + length))
                           .map((x) => formatter(x))
                           .join('\n'));

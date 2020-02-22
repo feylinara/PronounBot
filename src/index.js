@@ -29,7 +29,7 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
     .replace(/>/g, '\\>')
     .replace(/\|/g, '\\|')
     .replace(/`/g, '\\`'));
-  let formatter = (x) => `- ${x}`;
+  const formatter = (x) => `- ${x}`;
   const languageName = result.rows[0].language;
   const title = `**Pronouns in ${languageName}**`;
 
@@ -39,8 +39,8 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
 const listLanguages = async ({ channel, author }) => {
   const languages = (await database.countPronouns()).rows;
 
-  const title = `**Languages we support**`;
-  const formatter = ({language, pronouns}) => `${language}: ${pronouns} pronouns`;
+  const title = '**Languages we support**';
+  const formatter = ({ language, pronouns }) => `${ language }: ${ pronouns } pronouns`;
 
   await paginate(languages, formatter, title, { channel, author });
 };
@@ -95,7 +95,7 @@ discordClient.on('message', async (message) => {
             } else if (parse[2] == 'language') {
               const languages = await database.getLanguage(parse[3]);
               if (languages.length == 0) {
-                await showError('I\'m sorry, I don\'t know that language (unfortunately autonyms aren\'t supported yet, so please use the English name for now) :(', message.channel, message.author);
+                await showError('I\'m sorry, I don\'t know that language (unfortunately endonyms aren\'t supported yet, so please use the English name for now) :(', message.channel, message.author);
               } else if (languages.length == 1) {
                 await database.updatePrimaryLanguage(languages[0].iso_639_3);
                 await message.channel.send(`set server language to ${languages[0].name} [${languages[0].iso_639_3}]`);

@@ -77,7 +77,7 @@ module.exports = (database) => {
       if (isRegistered && numberUsers == 1) {
         await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
       }
-    await channel.send(`:space_invader: removed *${display}* from your pronouns, ${member.nickname || member.user.username}`);
+      await channel.send(`:space_invader: removed *${display}* from your pronouns, ${member.nickname || member.user.username}`);
     } else {
       throw {
         message: 'Sorry, you don\'t have that pronoun role :(',

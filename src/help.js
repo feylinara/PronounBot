@@ -67,7 +67,7 @@ Where commands take pronouns you do not have to enter all forms of a pronoun, Bo
      **Prefix:** set a server prefix\n
       ${getUsage('prefix', commandWord, serverSettings)}
 
-     **Language:** set the server\'s primary language\n
+     **Language:** set the server's primary language\n
       ${getUsage('language', commandWord, serverSettings)}
 
 `;
