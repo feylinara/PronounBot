@@ -16,7 +16,7 @@ const loadQueries = () => {
 class Database {
   constructor() {
     this.db = new Pool(
-      connectionString: process.env["DATABASE_URL"],
+      {connectionString: process.env["DATABASE_URL"],}
     );
     this.queries = loadQueries();
   }
