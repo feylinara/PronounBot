@@ -118,7 +118,7 @@ discordClient.on('message', async (message) => {
 });
 
 discordClient.on('ready', async () => {
-  await discordClient.user.setPresence({ game: { name: 'Gender: Hard Mode' } });
+  await discordClient.user.setPresence({ game: { name: `^${commandWord} help` } });
 });
 
 discordClient.login(process.env.DISCORDSECRET);
