@@ -1,2 +1,2 @@
 worker: node src/index.js
-release: npm run-script postgrator -- -h $PGHOST -p $PGPORT -d $PGDATABASE
+release: npm run-script postgrator -- -h $PGHOST -o $PGPORT -d $PGDATABASE -u $PGUSER -p $PGPASSWORD
