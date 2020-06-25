@@ -1,3 +1,3 @@
 UPDATE server_settings
-SET primary_language = $1
-WHERE server_id = $2;
+SET primary_language = $2
+WHERE server_id = $1;
