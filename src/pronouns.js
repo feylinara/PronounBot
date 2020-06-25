@@ -41,7 +41,7 @@ module.exports = (database) => {
 
       const pronouns = await database.getPronouns(cases, language);
       if (pronouns.length == 0) {
-        console.err(cases);
+        console.error(cases);
         throw {
           message: 'Sorry, we don\'t have those pronouns in our db yet :(',
           userfacing: true,
