@@ -39,7 +39,7 @@ const filterOptions = (args, fallback) => {
     }
   }).map((x) => {
     if (x.charAt(0) == '"' && x.charAt(x.length - 1) == '"') {
-      return x.substring(1, x.length - 2);
+      return x.substring(1, x.length - 1);
     } else {
       return x;
     }
