@@ -97,12 +97,12 @@ discordClient.on('message', async (message) => {
               if (languages.length == 0) {
                 await showError('I\'m sorry, I don\'t know that language (unfortunately endonyms aren\'t supported yet, so please use the English name for now) :(', message.channel, message.author);
               } else if (languages.length == 1) {
-                await database.updatePrimaryLanguage(languages[0].iso_639_3);
+                await database.updatePrimaryLanguage(guildId, languages[0].iso_639_3);
                 await message.channel.send(`set server language to ${languages[0].name} [${languages[0].iso_639_3}]`);
               } else {
                 const question = 'We have several languages that match that name.\nWhich one do you want?';
                 const choice = await chooser(message, question, languages, (language) => `${language.name} [${language.iso_639_3}]`);
-                await database.updatePrimaryLanguage(choice.iso_639_3);
+                await database.updatePrimaryLanguage(guildId, choice.iso_639_3);
               }
             }
           } else {
