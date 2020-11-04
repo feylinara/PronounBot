@@ -22,12 +22,13 @@ module.exports = (database) => {
 
   const addPronounRole = async (pronoun, { member, channel, guild }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
+    console.log(display, qualified);
 
     const role = guild.roles.find((el) => el.name == qualified);
     if (role) {
       await member.roles.add(role);
     } else {
-      const newRole = await guild.createRole({ name: qualified });
+      const newRole = await guild.roles.create({ name: qualified, reason: `Missing pronoun role for ${display}` });
       await Promise.all([member.roles.add(newRole), database.registerRole(newRole)]);
     }
     await channel.send(`:space_invader: set your pronouns to *${display}*, ${member.nickname || member.user.username}`);
