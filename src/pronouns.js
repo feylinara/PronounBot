@@ -27,14 +27,13 @@ module.exports = (database) => {
     const guildRoles = await guild.roles.fetch();
 
 
-
     const role = guildRoles.cache.find((el) => el.name == qualified);
     if (role) {
       console.log("role found");
       await member.roles.add(role);
     } else {
       console.log("creating role");
-      const newRole = await guild.roles.create({ name: qualified, reason: `Missing pronoun role for ${display}` });
+      const newRole = await guild.roles.create({ data: { name: qualified }, reason: `Missing pronoun role for ${display}` });
       console.log("created role");
       await Promise.all([member.roles.add(newRole), database.registerRole(newRole)]);
     }
@@ -74,21 +73,24 @@ module.exports = (database) => {
     }
   };
 
-  const countRole =
-    (role) => role.guild.members
-      .filter((member) => member.roles.find((memberRole) => memberRole.id == role.id) != null)
-      .size;
+  //const countRole =
+    //async (role) => {
+      //members = await role.guild.members.fetch();
+      //return members.filter((member) => member.roles.cache.find((memberRole) => memberRole.id == role.id) != null).size;
+    //}
 
   const deletePronounRole = async (pronoun, { channel, member }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
-    const role = member.roles.find((el) => el.name == qualified);
+    const role = member.roles.cache.find((el) => el.name == qualified);
+    console.log(role)
     if (role != undefined) {
-      const numberUsers = countRole(role);
-      const [isRegistered] = await Promise.all([await database.isRegistered(role), member.roles.add(role)]);
-      if (isRegistered && numberUsers == 1) {
-        await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
-      }
+      //const numberUsers = await countRole(role);
+      const [isRegistered] = await Promise.all([await database.isRegistered(role), member.roles.remove(role)]);
       await channel.send(`:space_invader: removed *${display}* from your pronouns, ${member.nickname || member.user.username}`);
+      // performs very badly, deactivated for now
+      //if (isRegistered && numberUsers == 1) {
+        //await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
+      //}
     } else {
       throw {
         message: 'Sorry, you don\'t have that pronoun role :(',
@@ -114,7 +116,7 @@ module.exports = (database) => {
       } else {
         pronouns = pronouns.filter((pronoun) => {
           const qualified = pronounRoleName(pronoun, serverSettings)[1];
-          return member.roles.find((el) => el.name == qualified);
+          return member.roles.cache.find((el) => el.name == qualified);
         });
         if (pronouns.length == 0) {
           throw {

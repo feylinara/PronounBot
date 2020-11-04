@@ -11,11 +11,15 @@ const chooser = async ({ author, channel }, question, choices, choiceFormatter) 
   await channel.send(embedRet);
   const response = await channel.awaitMessages(
     (message) => {
-	    console.log(message.content, author?author.id: "no author?", message.author? message.author.id: "no author"); 
-	    return !isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id
+	    console.log(message.content, author?author.id:"no author?", message.author?message.author.id:"no author", 
+		    //!isNaN(message.content), parseInt(message.content) <= choices.length, message.author.id == author.id,
+		    //!isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id
+	    ); 
+	    return !isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id;
     },
-    { maxMatches: 1, time: 5 * 60 * 500 },
+    { max: 1, time: 5 * 60 * 500, error: ['time'] },
   );
+  console.log(response);
   const index = parseInt(response.first().content) - 1;
   return choices[index];
 };

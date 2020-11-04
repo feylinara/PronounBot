@@ -118,6 +118,7 @@ discordClient.on('message', async (message) => {
 });
 
 discordClient.on('ready', async () => {
+  console.log("booted");
   await discordClient.user.setPresence({ game: { name: `^${commandWord} help` } });
 });
 
