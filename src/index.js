@@ -81,10 +81,10 @@ discordClient.on('message', async (message) => {
         } else if (parse[1] == 'list' || parse[1] == 'ls') {
           await listPronouns(parse, message, serverSettings);
         } else if (parse[1] == 'help') {
-          const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
+          const embed = getHelpText(commandWord, serverSettings, message.member().hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
         } else if (parse[1] == 'config' || parse[1] == 'config') {
-          if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
+          if (message.member().hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
             if (parse[2] == 'prefix') {
               if (parse.length < 4) {
                 await showError(getUsage('prefix', commandWord, serverSettings), message.channel, message.author);
