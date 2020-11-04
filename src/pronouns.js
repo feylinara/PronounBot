@@ -24,13 +24,15 @@ module.exports = (database) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
     console.log(display, qualified);
 
-    const role = guild.roles.find((el) => el.name == qualified);
+    const guildRoles = await guild.roles.fetch();
+
+    const role = guildRoles.find((el) => el.name == qualified);
     if (role) {
       console.log("role found");
       await member.roles.add(role);
     } else {
       console.log("creating role");
-      const newRole = await guild.roles.create({ name: qualified, reason: `Missing pronoun role for ${display}` });
+      const newRole = await guildRoles.create({ name: qualified, reason: `Missing pronoun role for ${display}` });
       console.log("created role");
       await Promise.all([member.roles.add(newRole), database.registerRole(newRole)]);
     }
