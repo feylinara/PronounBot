@@ -25,10 +25,10 @@ module.exports = (database) => {
 
     const role = guild.roles.find((el) => el.name == qualified);
     if (role) {
-      await member.addRole(role);
+      await member.roles.add(role);
     } else {
       const newRole = await guild.createRole({ name: qualified });
-      await Promise.all([member.addRole(newRole), database.registerRole(newRole)]);
+      await Promise.all([member.roles.add(newRole), database.registerRole(newRole)]);
     }
     await channel.send(`:space_invader: set your pronouns to *${display}*, ${member.nickname || member.user.username}`);
   };
@@ -39,9 +39,11 @@ module.exports = (database) => {
 
       const cases = argsParsed.map((x) => x.split('/')).reduce((a, b) => a.concat(b), []);
 
+      console.log(cases);
+
       const pronouns = await database.getPronouns(cases, language);
       if (pronouns.length == 0) {
-        console.error(cases);
+        console.log(cases);
         throw {
           message: 'Sorry, we don\'t have those pronouns in our db yet :(',
           userfacing: true,
@@ -74,7 +76,7 @@ module.exports = (database) => {
     const role = member.roles.find((el) => el.name == qualified);
     if (role != undefined) {
       const numberUsers = countRole(role);
-      const [isRegistered] = await Promise.all([await database.isRegistered(role), member.removeRole(role)]);
+      const [isRegistered] = await Promise.all([await database.isRegistered(role), member.roles.add(role)]);
       if (isRegistered && numberUsers == 1) {
         await Promise.all([database.unregisterRole(role), role.delete('No user has this pronoun role. It will be recreated when needed')]);
       }
