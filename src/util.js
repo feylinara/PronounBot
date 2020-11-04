@@ -10,8 +10,11 @@ const chooser = async ({ author, channel }, question, choices, choiceFormatter) 
   }
   await channel.send(embedRet);
   const response = await channel.awaitMessages(
-    (message) => (!isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id),
-    { maxMatches: 1, time: 5 * 60 * 500, errors: ['time'] },
+    (message) => {
+	    console.log(message); 
+	    return !isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id
+    },
+    { maxMatches: 1, time: 5 * 60 * 500 },
   );
   const index = parseInt(response.first().content) - 1;
   return choices[index];
