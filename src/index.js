@@ -121,4 +121,7 @@ discordClient.on('ready', async () => {
   await discordClient.user.setPresence({ game: { name: `^${commandWord} help` } });
 });
 
+discordClient.on('error', async (e) => {
+	console.log(e);
+});
 discordClient.login(process.env.DISCORDSECRET);
