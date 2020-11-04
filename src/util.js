@@ -11,7 +11,7 @@ const chooser = async ({ author, channel }, question, choices, choiceFormatter) 
   await channel.send(embedRet);
   const response = await channel.awaitMessages(
     (message) => {
-	    console.log(message); 
+	    console.log(message.content); 
 	    return !isNaN(message.content) && parseInt(message.content) <= choices.length && message.author.id == author.id
     },
     { maxMatches: 1, time: 5 * 60 * 500 },
