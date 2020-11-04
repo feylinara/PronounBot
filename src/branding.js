@@ -1,9 +1,9 @@
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 const colourRBGString = '#EB8EBB';
 const colourRBG = [0xE8, 0x8E, 0xBB];
 
-const embed = () => new RichEmbed()
+const embed = () => new MessageEmbed()
     .setColor(colourRBG);
 
 const showError = async (errorMessage, channel, user) => {
