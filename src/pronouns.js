@@ -5,36 +5,30 @@ module.exports = (database) => {
   const serverQueues = {};
 
   const pronounRoleName = (pronoun, serverSettings) => {
-    const display = pronoun.cases
-                           .join('/')
-                           .replace(/\*/g, '\\*')
+    let qualified = pronoun.cases.join('/');
+    let display = qualified.replace(/\*/g, '\\*')
                            .replace(/_/g, '\\_')
                            .replace(/~/g, '\\~')
                            .replace(/>/g, '\\>')
                            .replace(/\|/g, '\\|')
                            .replace(/`/g, '\\`');
-    let qualified = display;
     if (pronoun.iso_639_3 != serverSettings.primaryLanguage) {
-      qualified = `${pronoun.iso_639_3}: ${display}`;
+      qualified = `${pronoun.iso_639_3}: ${qualified}`;
     }
     return [display, qualified];
   };
 
   const addPronounRole = async (pronoun, { member, channel, guild }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
-    console.log(display, qualified);
 
     const guildRoles = await guild.roles.fetch();
 
 
     const role = guildRoles.cache.find((el) => el.name == qualified);
     if (role) {
-      console.log("role found");
       await member.roles.add(role);
     } else {
-      console.log("creating role");
       const newRole = await guild.roles.create({ data: { name: qualified }, reason: `Missing pronoun role for ${display}` });
-      console.log("created role");
       await Promise.all([member.roles.add(newRole), database.registerRole(newRole)]);
     }
     await channel.send(`:space_invader: set your pronouns to *${display}*, ${member.nickname || member.user.username}`);
@@ -46,11 +40,9 @@ module.exports = (database) => {
 
       const cases = argsParsed.map((x) => x.split('/')).reduce((a, b) => a.concat(b), []);
 
-      console.log(cases);
 
       const pronouns = await database.getPronouns(cases, language);
       if (pronouns.length == 0) {
-        console.log(cases);
         throw {
           message: 'Sorry, we don\'t have those pronouns in our db yet :(',
           userfacing: true,
@@ -82,7 +74,6 @@ module.exports = (database) => {
   const deletePronounRole = async (pronoun, { channel, member }, serverSettings) => {
     const [display, qualified] = pronounRoleName(pronoun, serverSettings);
     const role = member.roles.cache.find((el) => el.name == qualified);
-    console.log(role)
     if (role != undefined) {
       //const numberUsers = await countRole(role);
       const [isRegistered] = await Promise.all([await database.isRegistered(role), member.roles.remove(role)]);
