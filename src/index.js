@@ -64,38 +64,38 @@ discordClient.on('message', async (message) => {
     // split by space keeping quote-wrapped strings
     let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g);
     if (parse) {
-      parse = parse.map((x) => x.replace(/"/g, '').toLowerCase());
-      if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
-        if (parse[1] == 'add') {
-          if (parse.length < 3) {
+      cmd = parse.map((x) => x.replace(/"/g, '').toLowerCase());
+      if (cmd[0] == `${serverSettings.prefix}${commandWord}`) {
+        if (cmd[1] == 'add') {
+          if (cmd.length < 3) {
             await showError(getUsage('add', commandWord, serverSettings), message.channel, message.author);
           } else {
             await pronounAction('add', parse.slice(2), message, serverSettings);
           }
-        } else if (parse[1] == 'delete' || parse[1] == 'remove' || parse[1] == 'rm') {
-          if (parse.length < 3) {
+        } else if (cmd[1] == 'delete' || cmd[1] == 'remove' || cmd[1] == 'rm') {
+          if (cmd.length < 3) {
             await showError(getUsage('delete', commandWord, serverSettings), message.channel, message.author);
           } else {
             await pronounAction('delete', parse.slice(2), message, serverSettings);
           }
-        } else if (parse[1] == 'languages' || parse[1] == 'langs') {
+        } else if (cmd[1] == 'languages' || cmd[1] == 'langs') {
           await listLanguages(message);
-        } else if (parse[1] == 'list' || parse[1] == 'ls') {
-          await listPronouns(parse, message, serverSettings);
-        } else if (parse[1] == 'help') {
+        } else if (cmd[1] == 'list' || cmd[1] == 'ls') {
+          await listPronouns(cmd, message, serverSettings);
+        } else if (cmd[1] == 'help') {
           const embed = getHelpText(commandWord, serverSettings, message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD));
           await message.channel.send(embed);
-        } else if (parse[1] == 'config' || parse[1] == 'config') {
+        } else if (cmd[1] == 'config' || cmd[1] == 'config') {
           if (message.member.hasPermission(Permissions.FLAGS.MANAGE_GUILD)) {
-            if (parse[2] == 'prefix') {
-              if (parse.length < 4) {
+            if (cmd[2] == 'prefix') {
+              if (cmd.length < 4) {
                 await showError(getUsage('prefix', commandWord, serverSettings), message.channel, message.author);
               } else {
-                await database.updatePrefix(guildId, parse[3]);
-                await message.channel.send(`changed server prefix to ${parse[3]}`);
+                await database.updatePrefix(guildId, cmd[3]);
+                await message.channel.send(`changed server prefix to ${cmd[3]}`);
               }
-            } else if (parse[2] == 'language') {
-              const languages = await database.getLanguage(parse[3]);
+            } else if (cmd[2] == 'language') {
+              const languages = await database.getLanguage(cmd[3]);
               if (languages.length == 0) {
                 await showError('I\'m sorry, I don\'t know that language (unfortunately endonyms aren\'t supported yet, so please use the English name for now) :(', message.channel, message.author);
               } else if (languages.length == 1) {

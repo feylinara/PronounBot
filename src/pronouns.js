@@ -40,7 +40,7 @@ module.exports = (database) => {
 
       const cases = argsParsed.map((x) => x.split('/')).reduce((a, b) => a.concat(b), []);
 
-
+	    console.log(cases);
       const pronouns = await database.getPronouns(cases, language);
       if (pronouns.length == 0) {
         throw {
