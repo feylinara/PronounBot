@@ -18,7 +18,8 @@
         "discord.js": "^12.5.1",
         "integer": "^2.1.0",
         "pg": "^8",
-        "postgrator-cli": "^3.3.0"
+        "postgrator": "^4.1.1",
+        "postgrator-cli": "^4.0.0"
     },
     "devDependencies": {}
 }
