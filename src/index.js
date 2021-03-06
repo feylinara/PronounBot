@@ -1,3 +1,5 @@
+const localisation = require("./localisation.js");
+
 const { Client, Permissions } = require('discord.js');
 const { Database } = require('./db.js');
 const { getHelpText, getUsage } = require('./help.js');
@@ -33,7 +35,7 @@ const listPronouns = async (args, { author, channel }, serverSettings) => {
   const languageName = result.rows[0].language;
   const title = `**Pronouns in ${languageName}**`;
 
-  await paginate(pronouns, formatter, title, { channel, author });
+  await paginate(pronouns, formatter, title, { channel, author }, serverSettings);
 };
 
 const listLanguages = async ({ channel, author }) => {

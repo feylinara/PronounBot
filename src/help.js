@@ -1,3 +1,4 @@
+const localisation = require("./localisation.js");
 const { embed } = require('./branding.js');
 
 const examples = [
@@ -10,71 +11,61 @@ const examples = [
 const getExample = (command, commandWord, serverSettings) => {
   const { pronoun, language, iso } = examples[Math.floor(Math.random() * examples.length)];
   if (iso == serverSettings.primaryLanguage) {
-    return `\`${serverSettings.prefix}${commandWord} ${command} ${pronoun}\``;
+    return `${serverSettings.prefix}${commandWord} ${command} ${pronoun}`;
   }
-  return `\`${serverSettings.prefix}${commandWord} ${command} ${pronoun} language:${language}\``;
+  return `${serverSettings.prefix}${commandWord} ${command} ${pronoun} language:${language}`;
 };
 
 const getUsage = (command, commandWord, serverSettings) => {
   const commandPrefix = `${serverSettings.prefix}${commandWord}`;
   if (command == 'add' || command == 'delete') {
-    return `Use as \`${commandPrefix} ${command} <pronoun> [language:<language>]\`, ` +
-         `for example ${getExample(command, commandWord, serverSettings)}`;
+    return `${commandPrefix} ${command} <pronoun> [language:<language>]`
   } else if (command == 'prefix') {
-    return `Use as \`${commandPrefix} config prefix <prefix>\`, ` +
-           `for example \`${commandPrefix} config prefix !\``;
+    return `${commandPrefix} config prefix <prefix>`;
+  } else if (command == 'config language') {
+    return `${commandPrefix} config language <language>`;
   } else if (command == 'language') {
-    return `Use as \`${commandPrefix} config language <language>\`, ` +
-      `for example \`${commandPrefix} config language ${examples[Math.floor(Math.random() * examples.length)].language}\``;
+    return `${commandPrefix} language <language>`;
+  } else if (command == 'help') {
+    return `${commandPrefix} help`
   } else if (command == 'list') {
-    return `Use as \`${commandPrefix} list [<language>]\`, ` +
-      `for example \`${commandPrefix} list language:${examples[Math.floor(Math.random() * examples.length)].language}\``;
+    return `${commandPrefix} list [<language>]`
   }
 };
 
 const getHelpText = (commandWord, serverSettings, config) => {
-  let helpText =
-`***Help for Bontje the pronoun bot***
-
-**General Info:**
-
-Bontje is a bot to manage pronoun roles
-
-All commands that take a language flag can take \`language:<language>\`, \`lang:<language>\` or \`l:<language>\`, where language can be an iso code (like *deu* or *de*) or the English name (like *German*)
-
-Where commands take pronouns you do not have to enter all forms of a pronoun, Bontje will guess, and ask when there's multiple possibilities
-
-***Commands:***
-
-**Add:** Add a pronoun role to your roles
- ${getUsage('add', commandWord, serverSettings)}
-
-**Delete:** Delete a pronoun role from your roles *(aliases: remove, del, rm)*
- ${getUsage('delete', commandWord, serverSettings)}
-
-**List:** Show the pronouns we know for your language *(aliases: ls)*
- ${getUsage('list', commandWord, serverSettings)}
-
-**Languages:** Show a list of the languages we have pronouns for
-
-**Help:** Show this help screen`;
+  let fb = localisation[serverSettings.primaryLanguage] || localisation['eng'];
+  let help_msg = fb.getMessage("help");
+  let errors = [];
+  let helpText = fb.formatPattern(help_msg.value, {
+	  "add-usage": getUsage('add', commandWord, serverSettings),
+	  "add-example": getExample('add', commandWord, serverSettings),
+	  "delete-usage": getUsage('delete', commandWord, serverSettings),
+	  "delete-example": getExample('delete', commandWord, serverSettings),
+	  "help-usage": getUsage('help', commandWord, serverSettings),
+	  "list-usage": getUsage('list', commandWord, serverSettings),
+	  "lang-usage": getUsage('language', commandWord, serverSettings),
+  }, errors);
   if (config) {
-    helpText +=
-`
-
-     ***Config Options:***
-
-     **Prefix:** set a server prefix\n
-      ${getUsage('prefix', commandWord, serverSettings)}
-
-     **Language:** set the server's primary language\n
-      ${getUsage('language', commandWord, serverSettings)}
-
-`;
+    helpText += "\n\n";
+    helpText += fb.formatPattern(help_msg.attributes.config, {
+	  "prefix-usage":getUsage('prefix', commandWord, serverSettings),
+	  "primary-lang-usage":getUsage('config language', commandWord, serverSettings),
+    }, errors)
   }
-  helpText +=
-    '*If you have any feedback or bug reports please tell me on my [discord server](https://discord.gg/UcjkRJq) ' +
-               'or my [github](https://github.com/feylinara/pronounbot)*';
+  helpText += "\n\n";
+
+  let feedback_msg = fb.getMessage("feedback");
+  helpText += fb.formatPattern(feedback_msg.value, {
+	  "discord-server": process.env.HELP_SERVER,
+	  "github-link": process.env.GITHUB,
+  });
+
+
+  if (errors.length) {
+	  console.log("localistion errors:");
+	  console.log(errors);
+  }
   return embed()
     .setDescription(helpText);
 };
