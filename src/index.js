@@ -65,6 +65,7 @@ discordClient.on('message', async (message) => {
     let parse = message.content.match(/(?:[^\s"]+|"[^"]*")+/g);
     if (parse) {
       parse = parse.map((x) => x.replace(/"/g, '').toLowerCase());
+	      console.log(parse);
       if (parse[0] == `${serverSettings.prefix}${commandWord}`) {
         if (parse[1] == 'add') {
           if (parse.length < 3) {
@@ -120,8 +121,8 @@ discordClient.on('message', async (message) => {
 });
 
 discordClient.on('ready', async () => {
-  console.log("booted");
   await discordClient.user.setPresence({ game: { name: `^${commandWord} help` } });
+  console.log("booted");
 });
 
 discordClient.on('error', async (e) => {
