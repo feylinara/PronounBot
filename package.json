@@ -13,11 +13,11 @@
     "repository": "https://github.com/feylinara/PronounBot",
     "dependencies": {
         "@fluent/bundle": "^0.16.0",
-        "async": "^3.1.0",
-        "bufferutil": "^4.0.1",
-        "discord.js": "^12",
+        "async": "^3.2.0",
+        "bufferutil": "^4.0.3",
+        "discord.js": "^12.5.1",
         "integer": "^2.1.0",
-        "pg": "^7.14.0",
+        "pg": "^7.18.2",
         "postgrator-cli": "^3.3.0"
     },
     "devDependencies": {}
