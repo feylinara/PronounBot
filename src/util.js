@@ -96,7 +96,7 @@ const paginate = async (rows, formatter, title, { channel, author }) => {
           first = rows.length - rows.length % length;
         }
       }
-      await Promise.all([message.edit(generateEmbed(first, length)), reaction.remove(author)]);
+      await Promise.all([message.edit(generateEmbed(first, length)), reaction.users.remove(author)]);
     });
   }
 };
