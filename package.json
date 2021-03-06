@@ -12,14 +12,14 @@
     "license": "ISC",
     "repository": "https://github.com/feylinara/PronounBot",
     "dependencies": {
-        "@fluent/bundle": "^0.16.0",
-        "async": "^3.2.0",
-        "bufferutil": "^4.0.3",
-        "discord.js": "^12.5.1",
-        "integer": "^2.1.0",
-        "pg": "^8",
-        "postgrator": "^4.1.1",
-        "postgrator-cli": "^4.0.0"
+        "@fluent/bundle": "*",
+        "async": "*",
+        "bufferutil": "*",
+        "discord.js": "*",
+        "integer": "*",
+        "pg": "8.2.1",
+        "postgrator": "*",
+        "postgrator-cli": "*"
     },
     "devDependencies": {}
 }
