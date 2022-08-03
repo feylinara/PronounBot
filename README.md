@@ -47,8 +47,8 @@ used by users with *Manage Server* permissions
 ### Prerequisites
 
 PronounBot needs a version of nodejs that supports `async/await` and
-postgresql. You'll also need a dicord API key which you can get from
-[here](https://discordapp.com/developers/applications/)
+postgresql. You'll also need a discord API key which you can get from
+[here](https://discord.com/developers/applications/)
 
 ### Installation
 
