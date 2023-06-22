@@ -17,7 +17,7 @@
         "bufferutil": "*",
         "discord.js": "*",
         "integer": "*",
-        "pg": "8.2.1",
+        "pg": "8.11.0",
         "postgrator": "*",
         "postgrator-cli": "*"
     },
